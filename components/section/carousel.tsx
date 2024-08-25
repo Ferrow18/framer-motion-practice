@@ -134,8 +134,10 @@ const SmallCarousel = ({ photos }: { photos: Photos[] }) => {
             <Image
               src={photo.src}
               alt="movie"
-              width={300}
-              height={300}
+              width={800}
+              height={450}
+              placeholder="blur"
+              blurDataURL="/data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg=="
               className="object-cover w-full h-full rounded-xl"
             />
           </div>
