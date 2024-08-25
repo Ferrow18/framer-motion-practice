@@ -1,6 +1,6 @@
 "use client";
 
-import { movies } from "@/data/movies";
+import { photosData } from "@/data/photosData";
 import Image from "next/image";
 import {
   motion,
@@ -8,28 +8,27 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useWindowSize } from "react-use";
+import { Photos, PhotosArray } from "@/app/api/photos/route";
 
-type Photos = {
-  photos1: string[];
-  photos2: string[];
-};
-
-export const Carousel = () => {
+export const Carousel = ({ photos }: { photos: PhotosArray }) => {
   const { width, height } = useWindowSize();
   const container = useRef<HTMLDivElement>(null);
+  const [maxScale, setMaxScale] = useState(1);
 
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ["start start", "end start"],
   });
 
-  const maxScale = useMemo(() => {
-    const windowYRatio = height / width;
-    const xScale = 1.66667;
-    const yScale = xScale * (16 / 9) * windowYRatio;
-    return Math.max(xScale, yScale);
+  useEffect(() => {
+    if (width && height) {
+      const windowYRatio = height / width;
+      const xScale = 1.66667;
+      const yScale = xScale * (16 / 9) * windowYRatio;
+      setMaxScale(Math.max(xScale, yScale));
+    }
   }, [width, height]);
 
   const scale = useTransform(
@@ -45,10 +44,6 @@ export const Carousel = () => {
   const [carouselVariant, setCarouselVariant] = useState<"inactive" | "active">(
     "inactive"
   );
-  const [photos, setPhotos] = useState<Photos>({
-    photos1: [],
-    photos2: [],
-  });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (latest >= 0.66) {
@@ -57,18 +52,6 @@ export const Carousel = () => {
       setCarouselVariant("inactive");
     }
   });
-
-  useEffect(() => {
-    async function fetchPhotos() {
-      const res = await fetch("/api/photos")
-        .then((res) => res.json())
-        .catch((err) => console.error(err));
-
-      setPhotos(res);
-    }
-
-    fetchPhotos();
-  }, []);
 
   return (
     <motion.div animate={carouselVariant} className="bg-background pb-16">
@@ -81,8 +64,8 @@ export const Carousel = () => {
             >
               <Image
                 className="h-full w-full object-cover"
-                src={movies[0].image}
-                alt={movies[0].name}
+                src={photosData[0].image}
+                alt={photosData[0].name}
                 width={1600}
                 height={900}
               />
@@ -93,8 +76,8 @@ export const Carousel = () => {
             >
               <Image
                 className="h-full w-full object-cover"
-                src={movies[1].image}
-                alt={movies[1].name}
+                src={photosData[1].image}
+                alt={photosData[1].name}
                 width={1600}
                 height={900}
               />
@@ -115,8 +98,8 @@ export const Carousel = () => {
             >
               <Image
                 className="h-full w-full object-cover"
-                src={movies[2].image}
-                alt={movies[2].name}
+                src={photosData[2].image}
+                alt={photosData[2].name}
                 width={1600}
                 height={900}
               />
@@ -133,23 +116,23 @@ export const Carousel = () => {
         transition={{ duration: 0.5 }}
         className="-mt-[calc((100vh-(300px*(16/9)))/2)] space-y-3 pt-4 md:-mt-[calc((100vh-(60vw*(9/16)))/2)]"
       >
-        <SmallCarousel movies={photos.photos1} />
+        <SmallCarousel photos={photos.photos1} />
         <div className="[--carousel-offset:-60px] [--carousel-duration:70s]">
-          <SmallCarousel movies={photos.photos2} />
+          <SmallCarousel photos={photos.photos2} />
         </div>
       </motion.div>
     </motion.div>
   );
 };
 
-const SmallCarousel = ({ movies }: { movies: string[] }) => {
+const SmallCarousel = ({ photos }: { photos: Photos[] }) => {
   return (
     <div className="overflow-clip">
       <div className="flex gap-3 animate-carousel-move relative left-[var(--carousel-offset,0px)]">
-        {movies.map((movie, index) => (
+        {photos.map((photo, index) => (
           <div className="w-[25vw] aspect-video shrink-0" key={index}>
             <Image
-              src={movie}
+              src={photo.src}
               alt="movie"
               width={300}
               height={300}

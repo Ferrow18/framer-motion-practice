@@ -1,4 +1,4 @@
-import { createClient, PhotosWithTotalResults } from "pexels";
+import { createClient } from "pexels";
 import { NextResponse } from "next/server";
 
 export type PhotoUrl = {
@@ -7,6 +7,17 @@ export type PhotoUrl = {
 
 export type Photo = {
   src: PhotoUrl;
+};
+
+export type PhotosArray = {
+  photos1: Photos[];
+  photos2: Photos[];
+};
+
+export type Photos = {
+  src: string;
+  authorName: string;
+  authorUrl: string;
 };
 
 const client = createClient(process.env.PEXELS_API_KEY!);
@@ -31,18 +42,28 @@ export async function GET(request: Request) {
       return undefined;
     }
 
-    const photos1: string[] = [];
-    const photos2: string[] = [];
+    const photos1: Photos[] = [];
+    const photos2: Photos[] = [];
     const photosUrl = {
       photos1,
       photos2,
     };
 
     photosQuery.photos.forEach((photo, index) => {
+      const formattedAuthorName = capitalizeWords(photo.photographer);
+
       if (index < 7) {
-        photos1.push(photo.src.large);
+        photos1.push({
+          src: photo.src.large,
+          authorName: formattedAuthorName,
+          authorUrl: photo.photographer_url,
+        });
       } else {
-        photos2.push(photo.src.large);
+        photos2.push({
+          src: photo.src.large,
+          authorName: formattedAuthorName,
+          authorUrl: photo.photographer_url,
+        });
       }
     });
 
@@ -54,4 +75,11 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
+}
+
+function capitalizeWords(name: string) {
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 }

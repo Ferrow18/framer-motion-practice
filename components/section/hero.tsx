@@ -18,7 +18,7 @@ export const Hero = () => {
   const opacityImg = useTransform(scrollYProgress, [0, 0.7, 1], [1, 1, 0]);
 
   return (
-    <div className="relative bg-background text-white">
+    <div id="hero" className="relative bg-background text-white">
       <motion.div
         ref={container}
         style={{ opacity: opacityImg }}
@@ -34,10 +34,13 @@ export const Hero = () => {
       <Container className="relative pb-7 z-10 min-h-[--hero-height] flex flex-col justify-end items-start">
         <motion.div style={{ opacity: opacityText }}>
           <h1 className="text-5xl font-bold mb-10">
-            The Eagles Experience. <br /> Only Here
+            The Eagles Experience <br /> Only Here
           </h1>
-          <Button className="mb-16" size="large">
-            Test Button
+          <Button
+            className="mb-16 font-semibold hover:bg-white/90"
+            size="large"
+          >
+            Button
           </Button>
           <p className="font-semibold">Watch them in action</p>
         </motion.div>
