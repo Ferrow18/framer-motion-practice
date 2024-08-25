@@ -1,10 +1,17 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "../container";
+import { useWindowSize } from "react-use";
 
 export const Facts = () => {
   const container = useRef<HTMLDivElement>(null);
+  const { width } = useWindowSize();
+  const [initialX, setInitialX] = useState(0);
+
+  useEffect(() => {
+    setInitialX(width);
+  }, [width]);
 
   const { scrollYProgress } = useScroll({
     target: container,
@@ -16,7 +23,7 @@ export const Facts = () => {
   return (
     <div
       ref={container}
-      className="w-full relative py-36 z-20 h-[250vh] bg-background"
+      className="w-full relative py-36 z-20 h-[220vh] bg-background"
     >
       <div className="relative">
         <motion.div style={{ scale: scaleImg }} className="w-full">
